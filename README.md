@@ -63,8 +63,6 @@ Abordar la brecha de comunicación que enfrentan las aproximadamente 500,000 per
 
 ## 🏗 Arquitectura MVVM
 
-# Arquitectura de EnSeñasApp
-
 ## Arquitectura General
 ```mermaid
 graph TB
