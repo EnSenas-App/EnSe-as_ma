@@ -38,11 +38,6 @@ Abordar la brecha de comunicación que enfrentan las aproximadamente 500,000 per
 - Historia del lenguaje de señas
 - Directorio de organizaciones de apoyo
 
-### Traducción (Beta)
-- Traducción de LSC a texto
-- Enfoque en contextos administrativos
-- Procesamiento en tiempo real
-
 ## 🛠 Tecnologías
 
 ### Frontend
