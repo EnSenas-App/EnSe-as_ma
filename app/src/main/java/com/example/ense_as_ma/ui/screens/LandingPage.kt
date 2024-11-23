@@ -9,10 +9,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.ense_as_ma.forum.viewmodel.ForumViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LandingPage() {
+fun LandingPage(
+    forumViewModel: ForumViewModel
+) {
     var selectedItem by remember { mutableStateOf(0) }
 
     Scaffold(
@@ -53,13 +56,12 @@ fun LandingPage() {
             when (selectedItem) {
                 0 -> HomeScreen()
                 1 -> CardsScreen()
-                2 -> ForumScreen() // Ahora usa el nuevo ForumScreen
+                2 -> ForumScreen(viewModel = forumViewModel) // Pasamos el viewModel aquí
                 3 -> SettingsScreen()
             }
         }
     }
 }
-
 @Composable
 fun HomeScreen() {
     Text(

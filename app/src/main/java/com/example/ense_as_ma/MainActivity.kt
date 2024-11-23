@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import com.example.ense_as_ma.auth.AuthViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ense_as_ma.auth.AuthUiState
+import com.example.ense_as_ma.forum.viewmodel.ForumViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
                 var isLoggedIn by remember { mutableStateOf(false) }
                 val context = LocalContext.current
                 val authViewModel: AuthViewModel = viewModel()
+                val forumViewModel: ForumViewModel = viewModel()
                 val authState by authViewModel.uiState.collectAsState()
 
                 // Observar cambios en el estado de autenticación
@@ -53,7 +55,7 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     when {
                         isLoggedIn -> {
-                            LandingPage()
+                            LandingPage(forumViewModel = forumViewModel)
                         }
                         showLogin -> {
                             LoginScreen(

@@ -1,134 +1,144 @@
-// Path: app/src/main/java/com/example/ense_as_ma/ui/components/forum/NewPostDialog.kt
 package com.example.ense_as_ma.ui.components.forum
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.graphics.Color
 import com.example.ense_as_ma.forum.model.Post
 import com.google.firebase.Timestamp
+import androidx.compose.foundation.background
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewPostDialog(
     onDismiss: () -> Unit,
-    onPostCreated: (Post) -> Unit,
-    initialTitle: String = "",
-    initialContent: String = ""
+    onPostCreated: (Post) -> Unit
 ) {
-    var title by remember { mutableStateOf(initialTitle) }
-    var content by remember { mutableStateOf(initialContent) }
-    var isLoading by remember { mutableStateOf(false) }
-    val focusManager = LocalFocusManager.current
+    var title by remember { mutableStateOf("") }
+    var content by remember { mutableStateOf("") }
+    var selectedCategoryId by remember { mutableStateOf("1") }
+    var isDropdownExpanded by remember { mutableStateOf(false) }
 
-    AlertDialog(
-        onDismissRequest = {
-            if (!isLoading) onDismiss()
-        },
-        title = {
-            Text(
-                text = "Crear nueva publicación",
-                style = MaterialTheme.typography.headlineSmall
-            )
-        },
-        text = {
-            Column(
+    val categories = listOf(
+        "1" to "Aprendizaje LSC",
+        "2" to "Eventos y Encuentros",
+        "3" to "Cultura Sorda",
+        "4" to "Recursos y Material",
+        "5" to "Ayuda y Soporte"
+    )
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 6.dp
+        ) {
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
+                    .background(MaterialTheme.colorScheme.surface)
             ) {
-                // Campo de título
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Título") },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !isLoading,
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Next
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onNext = {
-                            focusManager.moveFocus(FocusDirection.Down)
-                        }
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Campo de contenido
-                OutlinedTextField(
-                    value = content,
-                    onValueChange = { content = it },
-                    label = { Text("Contenido") },
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(150.dp),
-                    enabled = !isLoading,
-                    maxLines = 5,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            focusManager.clearFocus()
-                        }
+                        .padding(24.dp)
+                ) {
+                    Text(
+                        text = "Crear nueva publicación",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(bottom = 16.dp)
                     )
-                )
 
-                if (isLoading) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    LinearProgressIndicator(
-                        modifier = Modifier.fillMaxWidth()
+                    OutlinedTextField(
+                        value = title,
+                        onValueChange = { title = it },
+                        label = { Text("Título") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        singleLine = true
                     )
+
+                    ExposedDropdownMenuBox(
+                        expanded = isDropdownExpanded,
+                        onExpandedChange = { isDropdownExpanded = it }
+                    ) {
+                        OutlinedTextField(
+                            value = categories.find { it.first == selectedCategoryId }?.second ?: "",
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Categoría") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(),
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropdownExpanded) }
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = isDropdownExpanded,
+                            onDismissRequest = { isDropdownExpanded = false }
+                        ) {
+                            categories.forEach { (id, name) ->
+                                DropdownMenuItem(
+                                    text = { Text(name) },
+                                    onClick = {
+                                        selectedCategoryId = id
+                                        isDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    OutlinedTextField(
+                        value = content,
+                        onValueChange = { content = it },
+                        label = { Text("Contenido") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(
+                            onClick = onDismiss
+                        ) {
+                            Text("Cancelar")
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Button(
+                            onClick = {
+                                val newPost = Post(
+                                    title = title.trim(),
+                                    content = content.trim(),
+                                    categoryId = selectedCategoryId,
+                                    createdAt = Timestamp.now(),
+                                    updatedAt = Timestamp.now()
+                                )
+                                onPostCreated(newPost)
+                            },
+                            enabled = title.isNotBlank() && content.isNotBlank()
+                        ) {
+                            Text("Publicar")
+                        }
+                    }
                 }
             }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    isLoading = true
-                    onPostCreated(
-                        Post(
-                            title = title.trim(),
-                            content = content.trim(),
-                            createdAt =  Timestamp.now()
-                        )
-                    )
-                },
-                enabled = !isLoading && title.trim().isNotBlank() && content.trim().isNotBlank()
-            ) {
-                Text("Publicar")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss,
-                enabled = !isLoading
-            ) {
-                Text("Cancelar")
-            }
         }
-    )
-}
-
-@Composable
-fun NewPostDialogPreview() {
-    var showDialog by remember { mutableStateOf(true) }
-
-    if (showDialog) {
-        NewPostDialog(
-            onDismiss = { showDialog = false },
-            onPostCreated = { showDialog = false }
-        )
     }
 }
