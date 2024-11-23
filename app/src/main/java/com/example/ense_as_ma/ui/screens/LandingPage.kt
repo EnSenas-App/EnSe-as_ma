@@ -1,3 +1,4 @@
+// Path: app/src/main/java/com/example/ense_as_ma/ui/screens/LandingPage.kt
 package com.example.ense_as_ma.ui.screens
 
 import androidx.compose.foundation.layout.*
@@ -13,7 +14,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LandingPage() {
     var selectedItem by remember { mutableStateOf(0) }
-    
+
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -44,17 +45,15 @@ fun LandingPage() {
             }
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
         ) {
-            // Contenido según la pestaña seleccionada
             when (selectedItem) {
                 0 -> HomeScreen()
                 1 -> CardsScreen()
-                2 -> ForumScreen()
+                2 -> ForumScreen() // Ahora usa el nuevo ForumScreen
                 3 -> SettingsScreen()
             }
         }
@@ -67,7 +66,9 @@ fun HomeScreen() {
         text = "Pantalla de Inicio provisional",
         style = MaterialTheme.typography.headlineMedium,
         textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
     )
 }
 
@@ -77,17 +78,9 @@ fun CardsScreen() {
         text = "Pantalla de Cartas provisional",
         style = MaterialTheme.typography.headlineMedium,
         textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth()
-    )
-}
-
-@Composable
-fun ForumScreen() {
-    Text(
-        text = "Pantalla del Foro provisional",
-        style = MaterialTheme.typography.headlineMedium,
-        textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
     )
 }
 
@@ -97,6 +90,8 @@ fun SettingsScreen() {
         text = "Pantalla de Ajustes provisional",
         style = MaterialTheme.typography.headlineMedium,
         textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
     )
 }
