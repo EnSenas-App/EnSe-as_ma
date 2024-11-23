@@ -62,6 +62,7 @@ dependencies {
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation ("com.google.firebase:firebase-firestore-ktx:24.10.0")
+    implementation ("io.coil-kt:coil-compose:2.5.0")  // Usa la última versión estable
 
 
     // TODO: Add the dependencies for Firebase products you want to use

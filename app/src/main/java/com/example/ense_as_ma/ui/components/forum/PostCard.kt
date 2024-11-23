@@ -1,53 +1,111 @@
-// Path: app/src/main/java/com/example/ense_as_ma/ui/components/forum/PostCard.kt
 package com.example.ense_as_ma.ui.components.forum
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.ense_as_ma.forum.model.Post
+import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
-import com.google.firebase.Timestamp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostCard(
     post: Post,
-    onClick: () -> Unit = {}
+    onLikeClick: () -> Unit = {},
+    onCommentClick: () -> Unit = {},
+    onShareClick: () -> Unit = {},
+    onPostClick: () -> Unit = {},
+    isLiked: Boolean = false
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        onClick = onClick
+        onClick = onPostClick
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // Encabezado del post
+            // Header - User Info
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Título
-                Text(
-                    text = post.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
+                // User info section
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    // User Avatar
+                    if (post.userImage.isNotEmpty()) {
+                        AsyncImage(
+                            model = post.userImage,
+                            contentDescription = "Avatar de ${post.userName}",
+                            modifier = Modifier
+                                .size(40.dp)
+                                .padding(end = 8.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        // Placeholder para cuando no hay imagen
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Avatar por defecto",
+                            modifier = Modifier
+                                .size(40.dp)
+                                .padding(end = 8.dp)
+                        )
+                    }
+
+                    // User name and timestamp
+                    Column {
+                        Text(
+                            text = post.userName,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = formatTimestamp(post.createdAt),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                // Menu (opcional)
+                IconButton(onClick = { /* Implementar menú */ }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Más opciones"
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Contenido
+            // Post Title
+            Text(
+                text = post.title,
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Post Content
             Text(
                 text = post.content,
                 style = MaterialTheme.typography.bodyMedium,
@@ -55,60 +113,87 @@ fun PostCard(
                 overflow = TextOverflow.Ellipsis
             )
 
+            // Attachments preview if any
+            if (post.attachments.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                // Implementar preview de attachments
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Fecha y métricas
+            // Action Buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Fecha formateada
-                Text(
-                    text = formatDate(post.createdAt),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline
-                )
-
-                // Métricas con iconos
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                // Like Button
+                IconButton(
+                    onClick = onLikeClick,
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = if (isLiked) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 ) {
-                    PostMetric(
-                        icon = "👁️",
-                        count = post.viewCount
-                    )
-                    PostMetric(
-                        icon = "❤️",
-                        count = post.likeCount
-                    )
-                    PostMetric(
-                        icon = "💬",
-                        count = post.commentCount
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Icon(
+                            imageVector = if (isLiked) Icons.Filled.Favorite
+                            else Icons.Filled.FavoriteBorder,
+                            contentDescription = if (isLiked) "No me gusta" else "Me gusta"
+                        )
+                        if (post.likeCount > 0) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = formatCount(post.likeCount),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
+                }
+
+                // Comment Button
+                IconButton(onClick = onCommentClick) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Comment,
+                            contentDescription = "Comentar"
+                        )
+                        if (post.commentCount > 0) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = formatCount(post.commentCount),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
+                }
+
+                // Share Button
+                IconButton(onClick = onShareClick) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = "Compartir"
+                        )
+                        if (post.shareCount > 0) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = formatCount(post.shareCount),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun PostMetric(
-    icon: String,
-    count: Int
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = icon,
-            style = MaterialTheme.typography.bodySmall
-        )
-        Text(
-            text = formatCount(count),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.outline
-        )
     }
 }
 
@@ -120,15 +205,10 @@ private fun formatCount(count: Int): String {
     }
 }
 
-private fun formatDate(date: Any): String {
-    val timestamp = when (date) {
-        is Long -> date
-        is Timestamp -> date.seconds * 1000 // Convertir segundos a milisegundos
-        else -> return "Fecha desconocida"
-    }
-
+private fun formatTimestamp(timestamp: Timestamp): String {
     val now = System.currentTimeMillis()
-    val diffInMillis = now - timestamp
+    val timeInMillis = timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000
+    val diffInMillis = now - timeInMillis
     val diffInMinutes = diffInMillis / (60 * 1000)
     val diffInHours = diffInMinutes / 60
     val diffInDays = diffInHours / 24
@@ -139,8 +219,27 @@ private fun formatDate(date: Any): String {
         diffInHours < 24 -> "$diffInHours h"
         diffInDays < 7 -> "$diffInDays d"
         else -> {
-            val sdf = SimpleDateFormat("dd MMM", Locale("es"))
-            sdf.format(Date(timestamp))
+            val sdf = SimpleDateFormat("dd MMM yy", Locale("es"))
+            sdf.format(Date(timeInMillis))
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PostCardPreview() {
+    val samplePost = Post(
+        title = "Título de ejemplo",
+        content = "Este es un contenido de ejemplo para mostrar cómo se vería un post en la aplicación.",
+        userName = "Usuario Ejemplo",
+        likeCount = 1234,
+        commentCount = 56,
+        shareCount = 7,
+        createdAt = Timestamp.now()
+    )
+
+    PostCard(
+        post = samplePost,
+        isLiked = true
+    )
 }
