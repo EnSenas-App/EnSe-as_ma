@@ -26,22 +26,18 @@ fun ForumScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showNewPostDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
-        floatingActionButton = {
-            if (uiState !is ForumUiState.Unauthorized) {
-                FloatingActionButton(
-                    onClick = { showNewPostDialog = true }
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Nuevo post")
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            floatingActionButton = {
+                if (uiState !is ForumUiState.Unauthorized) {
+                    FloatingActionButton(
+                        onClick = { showNewPostDialog = true }
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Nuevo post")
+                    }
                 }
             }
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
+        ) { innerPadding ->
             when (val state = uiState) {
                 is ForumUiState.Loading -> {
                     Box(
@@ -66,7 +62,9 @@ fun ForumScreen(
                 }
                 is ForumUiState.Success -> {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
                         contentPadding = PaddingValues(16.dp)
                     ) {
                         items(state.posts) { post ->
@@ -76,16 +74,22 @@ fun ForumScreen(
                     }
                 }
                 is ForumUiState.Error -> {
-                    Text(
-                        text = state.message,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(16.dp)
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = state.message,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
                 }
             }
         }
     }
 
+    // Diálogo como overlay
     if (showNewPostDialog) {
         NewPostDialog(
             onDismiss = { showNewPostDialog = false },

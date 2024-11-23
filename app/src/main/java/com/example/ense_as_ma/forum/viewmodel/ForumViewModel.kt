@@ -3,50 +3,34 @@ package com.example.ense_as_ma.forum.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ense_as_ma.forum.data.ForumRepository
-import com.example.ense_as_ma.forum.model.*
-import com.google.firebase.auth.FirebaseAuth
+import com.example.ense_as_ma.forum.model.Post
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 sealed class ForumUiState {
     object Loading : ForumUiState()
     object Unauthorized : ForumUiState()
-    data class Success(
-        val posts: List<Post> = emptyList(),
-        val categories: List<Category> = emptyList()
-    ) : ForumUiState()
+    data class Success(val posts: List<Post> = emptyList()) : ForumUiState()
     data class Error(val message: String) : ForumUiState()
 }
 
 class ForumViewModel(
-    private val repository: ForumRepository = ForumRepository(),
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val repository: ForumRepository = ForumRepository()
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow<ForumUiState>(ForumUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
     init {
-        checkAuthAndLoadData()
+        loadPosts()
     }
 
-    private fun checkAuthAndLoadData() {
-        if (auth.currentUser == null) {
-            _uiState.value = ForumUiState.Unauthorized
-            return
-        }
-        loadForumData()
-    }
-
-    private fun loadForumData() {
+    fun loadPosts() {
         viewModelScope.launch {
+            _uiState.value = ForumUiState.Loading
             try {
-                combine(
-                    repository.getPosts(),
-                    repository.getCategories()
-                ) { posts, categories ->
-                    ForumUiState.Success(posts, categories)
-                }.collect { state ->
-                    _uiState.value = state
+                repository.getPosts().collect { posts ->
+                    _uiState.value = ForumUiState.Success(posts)
                 }
             } catch (e: Exception) {
                 _uiState.value = ForumUiState.Error(e.message ?: "Error desconocido")
@@ -55,18 +39,19 @@ class ForumViewModel(
     }
 
     fun createPost(post: Post) {
-        if (auth.currentUser == null) {
-            _uiState.value = ForumUiState.Unauthorized
-            return
-        }
-
         viewModelScope.launch {
             try {
-                val postWithUser = post.copy(userId = auth.currentUser?.uid ?: "")
-                repository.createPost(postWithUser)
-                loadForumData()
+                _uiState.value = ForumUiState.Loading
+                repository.createPost(post).fold(
+                    onSuccess = {
+                        loadPosts() // Recargar posts después de crear uno nuevo
+                    },
+                    onFailure = { e ->
+                        _uiState.value = ForumUiState.Error(e.message ?: "Error al crear el post")
+                    }
+                )
             } catch (e: Exception) {
-                _uiState.value = ForumUiState.Error(e.message ?: "Error al crear el post")
+                _uiState.value = ForumUiState.Error(e.message ?: "Error desconocido")
             }
         }
     }
