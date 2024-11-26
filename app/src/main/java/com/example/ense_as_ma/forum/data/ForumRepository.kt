@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 
 class ForumRepository {
     private val db: FirebaseFirestore = Firebase.firestore
@@ -53,6 +54,20 @@ class ForumRepository {
 
             // Guardar el post en Firebase
             postRef.set(newPost).await()
+
+            Result.success(postRef.id)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun incrementLikeCount(postId: String) : Result<String> {
+        return try {
+            // Referencia al documento del post
+            val postRef = postsCollection.document(postId)
+
+            // Incrementa el campo "likeCount" en 1
+            postRef.update("likeCount", FieldValue.increment(1)).await()
 
             Result.success(postRef.id)
         } catch (e: Exception) {

@@ -55,4 +55,23 @@ class ForumViewModel(
             }
         }
     }
+
+    fun increaseLikeCount(postId: String) {
+        viewModelScope.launch {
+            try {
+                _uiState.value = ForumUiState.Loading
+                // Actualizar el post en Firestore
+                repository.incrementLikeCount(postId).fold(
+                    onSuccess = {
+                        loadPosts() // Recargar posts
+                    },
+                    onFailure = { e ->
+                        _uiState.value = ForumUiState.Error(e.message ?: "Error desconocido")
+                    }
+                )
+            } catch (e: Exception) {
+                _uiState.value = ForumUiState.Error(e.message ?: "Error desconocido")
+            }
+        }
+    }
 }

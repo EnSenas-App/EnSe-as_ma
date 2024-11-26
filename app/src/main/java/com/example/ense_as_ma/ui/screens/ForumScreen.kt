@@ -68,7 +68,12 @@ fun ForumScreen(
                         contentPadding = PaddingValues(16.dp)
                     ) {
                         items(state.posts) { post ->
-                            PostCard(post = post)
+                            PostCard(post = post,
+                                onLikeClick = {
+                                    // Llamamos al método en el ViewModel para incrementar el likeCount
+                                    viewModel.increaseLikeCount(post.postId)
+                                },
+                                isLiked = post.likeCount > 0)
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
