@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gcm_defaultSenderId" translatable="false">564883312389</string>
+    <string name="google_api_key" translatable="false">AIzaSyCOMnZSEToQtrn21M7yN8jDC3zbqHUfjeo</string>
+    <string name="google_app_id" translatable="false">1:564883312389:android:b95f1fb6b6b2243b8cf16c</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCOMnZSEToQtrn21M7yN8jDC3zbqHUfjeo</string>
+    <string name="google_storage_bucket" translatable="false">ensenasapptest.firebasestorage.app</string>
+    <string name="project_id" translatable="false">ensenasapptest</string>
+</resources>
