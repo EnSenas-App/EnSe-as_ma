@@ -6,6 +6,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import com.google.firebase.auth.userProfileChangeRequest
 
 class AuthRepository {
     private val auth = Firebase.auth
@@ -23,13 +24,27 @@ class AuthRepository {
                 }
         }
 
-    suspend fun signUp(email: String, password: String): Result<FirebaseUser> =
+    suspend fun signUp(email: String, password: String, name: String): Result<FirebaseUser> =
         suspendCoroutine { continuation ->
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener { result ->
-                    result.user?.let {
-                        continuation.resume(Result.success(it))
-                    } ?: continuation.resume(Result.failure(Exception("Error en el registro: Usuario no creado")))
+                    val user = result.user
+                    if (user != null) {
+                        // Actualizar el perfil del usuario con el nombre
+                        val profileUpdates = userProfileChangeRequest {
+                            displayName = name
+                        }
+
+                        user.updateProfile(profileUpdates)
+                            .addOnSuccessListener {
+                                continuation.resume(Result.success(user))
+                            }
+                            .addOnFailureListener { exception ->
+                                continuation.resume(Result.failure(Exception("Error al actualizar el perfil: ${exception.localizedMessage ?: "Error desconocido"}")))
+                            }
+                    } else {
+                        continuation.resume(Result.failure(Exception("Error en el registro: Usuario no creado")))
+                    }
                 }
                 .addOnFailureListener { exception ->
                     continuation.resume(Result.failure(Exception("Error en el registro: ${exception.localizedMessage ?: "Error desconocido"}")))

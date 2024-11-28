@@ -27,10 +27,10 @@ class AuthViewModel(
         }
     }
 
-    fun signUp(email: String, password: String) {
+    fun signUp(email: String, password: String, user:String) {
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
-            repository.signUp(email, password)
+            repository.signUp(email, password, user)
                 .fold(
                     onSuccess = {
                         _uiState.value = AuthUiState.Success

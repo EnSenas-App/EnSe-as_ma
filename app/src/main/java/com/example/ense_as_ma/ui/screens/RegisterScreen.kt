@@ -35,6 +35,7 @@ fun RegisterScreen(
     onRegisterSuccess: () -> Unit
 ) {
     // Estados para manejar los campos del formulario
+    var user by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -58,6 +59,21 @@ fun RegisterScreen(
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(bottom = 32.dp)
         )
+
+        // Campo de Usuario
+        OutlinedTextField(
+            value = user,
+            onValueChange = {
+                user = it
+                errorMessage = null // Limpiar error al escribir
+            },
+            label = { Text("Usuario") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            modifier = Modifier.fillMaxWidth(),
+            isError = errorMessage != null
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Campo de correo electrónico
         OutlinedTextField(
@@ -139,7 +155,7 @@ fun RegisterScreen(
                 }
 
                 // Intentar registro si pasa validaciones
-                viewModel.signUp(email, password)
+                viewModel.signUp(email, password, user)
             },
             // Habilitar el botón solo si todos los campos están llenos y no hay errores
             enabled = email.isNotBlank() && password.isNotBlank() &&

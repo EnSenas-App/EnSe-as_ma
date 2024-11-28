@@ -63,7 +63,7 @@ class ForumViewModel(
                 // Actualizar el post en Firestore
                 repository.incrementLikeCount(postId).fold(
                     onSuccess = {
-                        loadPosts() // Recargar posts
+                       loadPosts() // Recargar posts
                     },
                     onFailure = { e ->
                         _uiState.value = ForumUiState.Error(e.message ?: "Error desconocido")
