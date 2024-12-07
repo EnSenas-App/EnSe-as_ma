@@ -1,4 +1,4 @@
-package com.example.ense_as_ma.ui.screens
+package com.example.ense_as_ma.ui.screens.register
 
 import android.util.Log
 import androidx.compose.foundation.layout.*
@@ -16,8 +16,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.ense_as_ma.auth.AuthUiState
-import com.example.ense_as_ma.auth.AuthViewModel
+import com.example.ense_as_ma.ui.screens.login.LoginUiState
+import com.example.ense_as_ma.ui.screens.login.LoginViewModel
 
 // Constante para identificación de logs
 private const val TAG = "RegisterScreen"
@@ -31,7 +31,7 @@ private const val TAG = "RegisterScreen"
  */
 @Composable
 fun RegisterScreen(
-    viewModel: AuthViewModel = viewModel(),
+    viewModel: LoginViewModel = viewModel(),
     onRegisterSuccess: () -> Unit
 ) {
     // Estados para manejar los campos del formulario
@@ -160,11 +160,11 @@ fun RegisterScreen(
             // Habilitar el botón solo si todos los campos están llenos y no hay errores
             enabled = email.isNotBlank() && password.isNotBlank() &&
                     confirmPassword.isNotBlank() && errorMessage == null &&
-                    uiState !is AuthUiState.Loading,
+                    uiState !is LoginUiState.Loading,
             modifier = Modifier.fillMaxWidth()
         ) {
             // Mostrar indicador de progreso durante el registro
-            if (uiState is AuthUiState.Loading) {
+            if (uiState is LoginUiState.Loading) {
                 CircularProgressIndicator(
                     color = Color.White,
                     modifier = Modifier.size(24.dp)
@@ -187,12 +187,12 @@ fun RegisterScreen(
 
         // Manejo de estados de la UI
         when (uiState) {
-            is AuthUiState.Success -> {
+            is LoginUiState.Success -> {
                 Log.d(TAG, "Registro exitoso")
                 LaunchedEffect(Unit) { onRegisterSuccess() }
             }
-            is AuthUiState.Error -> {
-                val message = (uiState as AuthUiState.Error).message
+            is LoginUiState.Error -> {
+                val message = (uiState as LoginUiState.Error).message
                 Log.e(TAG, "Error en registro: $message")
                 Text(
                     text = message,
@@ -200,7 +200,7 @@ fun RegisterScreen(
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
-            is AuthUiState.Loading -> {
+            is LoginUiState.Loading -> {
                 Log.d(TAG, "Cargando...")
             }
             else -> Unit

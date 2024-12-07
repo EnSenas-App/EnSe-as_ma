@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">EnSe_as_ma</string>
+    <string name="label_signs_bot">ChatBot</string>
+    <string name="label_cards">Cartas</string>
+    <string name="label_forum">Foro</string>
+    <string name="label_camera">Camara</string>
+    <string name="label_settings">Opciones</string>
+    <string name="description_tab_for">Tab for %1$s</string>
 </resources>

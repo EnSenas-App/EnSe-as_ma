@@ -21,4 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "EnSe_as_ma"
 include(":app")
- 

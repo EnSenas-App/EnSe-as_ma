@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "564883312389",
+    "project_id": "ensenasapptest",
+    "storage_bucket": "ensenasapptest.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:564883312389:android:177b85bb2b0ba64f8cf16c",
+        "android_client_info": {
+          "package_name": "com.example.ense_as_ma"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOMnZSEToQtrn21M7yN8jDC3zbqHUfjeo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

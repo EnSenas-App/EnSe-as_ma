@@ -1,4 +1,4 @@
-package com.example.ense_as_ma.forum.model
+package com.example.ense_as_ma.data.model
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId

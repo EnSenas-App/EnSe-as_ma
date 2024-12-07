@@ -1,21 +1,17 @@
-package com.example.ense_as_ma.forum.viewmodel
+package com.example.ense_as_ma.ui.screens.forum
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.ense_as_ma.forum.data.ForumRepository
-import com.example.ense_as_ma.forum.model.Post
+import com.example.ense_as_ma.data.repository.ForumRepository
+import com.example.ense_as_ma.data.model.Post
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-sealed class ForumUiState {
-    object Loading : ForumUiState()
-    object Unauthorized : ForumUiState()
-    data class Success(val posts: List<Post> = emptyList()) : ForumUiState()
-    data class Error(val message: String) : ForumUiState()
-}
-
-class ForumViewModel(
-    private val repository: ForumRepository = ForumRepository()
+@HiltViewModel
+class ForumViewModel @Inject constructor(
+    private val forumRepository: ForumRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ForumUiState>(ForumUiState.Loading)
@@ -29,7 +25,7 @@ class ForumViewModel(
         viewModelScope.launch {
             _uiState.value = ForumUiState.Loading
             try {
-                repository.getPosts().collect { posts ->
+                forumRepository.getPosts().collect { posts ->
                     _uiState.value = ForumUiState.Success(posts)
                 }
             } catch (e: Exception) {
@@ -42,7 +38,7 @@ class ForumViewModel(
         viewModelScope.launch {
             try {
                 _uiState.value = ForumUiState.Loading
-                repository.createPost(post).fold(
+                forumRepository.createPost(post).fold(
                     onSuccess = {
                         loadPosts() // Recargar posts después de crear uno nuevo
                     },
@@ -61,7 +57,7 @@ class ForumViewModel(
             try {
                 _uiState.value = ForumUiState.Loading
                 // Actualizar el post en Firestore
-                repository.incrementLikeCount(postId).fold(
+                forumRepository.incrementLikeCount(postId).fold(
                     onSuccess = {
                        loadPosts() // Recargar posts
                     },

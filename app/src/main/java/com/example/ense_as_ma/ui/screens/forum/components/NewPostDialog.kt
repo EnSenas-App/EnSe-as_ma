@@ -1,4 +1,4 @@
-package com.example.ense_as_ma.ui.components.forum
+package com.example.ense_as_ma.ui.screens.forum.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -6,8 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.graphics.Color
-import com.example.ense_as_ma.forum.model.Post
+import com.example.ense_as_ma.data.model.Post
 import com.google.firebase.Timestamp
 import androidx.compose.foundation.background
 

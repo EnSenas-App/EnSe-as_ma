@@ -1,4 +1,4 @@
-package com.example.ense_as_ma.ui.screens
+package com.example.ense_as_ma.ui.screens.login
 
 import android.net.Uri
 import android.widget.VideoView
@@ -19,9 +19,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.ense_as_ma.auth.AuthUiState
-import com.example.ense_as_ma.auth.AuthViewModel
 import android.widget.Toast
+import androidx.hilt.navigation.compose.hiltViewModel
 
 /**
  * Pantalla de inicio de sesión que permite a los usuarios autenticarse en la aplicación.
@@ -33,10 +32,10 @@ import android.widget.Toast
  */
 @Composable
 fun LoginScreen(
-    modifier: Modifier = Modifier,
-    viewModel: AuthViewModel = viewModel(),
+    viewModel: LoginViewModel = hiltViewModel(),
     onLoginSuccess: () -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     // Estados para manejar los campos del formulario
     var email by remember { mutableStateOf("") }
@@ -56,12 +55,12 @@ fun LoginScreen(
      */
     LaunchedEffect(uiState) {
         when (uiState) {
-            is AuthUiState.Success -> {
+            is LoginUiState.Success -> {
                 Toast.makeText(context, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
                 onLoginSuccess()
             }
-            is AuthUiState.Error -> {
-                errorMessage = (uiState as AuthUiState.Error).message
+            is LoginUiState.Error -> {
+                errorMessage = (uiState as LoginUiState.Error).message
                 Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
             }
             else -> {
@@ -165,10 +164,10 @@ fun LoginScreen(
         Button(
             onClick = { viewModel.signIn(email, password) },
             enabled = email.isNotBlank() && password.isNotBlank() &&
-                    uiState !is AuthUiState.Loading,
+                    uiState !is LoginUiState.Loading,
             modifier = Modifier.fillMaxWidth()
         ) {
-            if (uiState is AuthUiState.Loading) {
+            if (uiState is LoginUiState.Loading) {
                 CircularProgressIndicator(
                     color = Color.White,
                     modifier = Modifier.size(24.dp)
@@ -189,3 +188,58 @@ fun LoginScreen(
         }
     }
 }
+
+/*
+
+var showLogin by remember { mutableStateOf(true) }
+                var isLoggedIn by remember { mutableStateOf(false) }
+                val context = LocalContext.current
+                val authViewModel: AuthViewModel = viewModel()
+                val forumViewModel: ForumViewModel = viewModel()
+                val authState by authViewModel.uiState.collectAsState()
+
+                // Observar cambios en el estado de autenticación
+                LaunchedEffect(authState) {
+                    when (authState) {
+                        is AuthUiState.Success -> {
+                            isLoggedIn = true
+                        }
+                        is AuthUiState.Error -> {
+                            isLoggedIn = false
+                            Toast.makeText(
+                                context,
+                                (authState as AuthUiState.Error).message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        else -> {} // No hacer nada para otros estados
+                    }
+                }
+
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    when {
+                        isLoggedIn -> {
+                            LandingPage(forumViewModel = forumViewModel)
+                        }
+                        showLogin -> {
+                            LoginScreen(
+                                onLoginSuccess = {
+                                    isLoggedIn = true
+                                    Toast.makeText(context, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
+                                },
+                                onRegisterClick = {
+                                    showLogin = false
+                                }
+                            )
+                        }
+                        else -> {
+                            RegisterScreen(
+                                onRegisterSuccess = {
+                                    isLoggedIn = true
+                                    Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        }
+                    }
+                }
+ */

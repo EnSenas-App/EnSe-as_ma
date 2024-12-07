@@ -1,14 +1,16 @@
-package com.example.ense_as_ma.auth
+package com.example.ense_as_ma.data.repository
 
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import com.google.firebase.auth.userProfileChangeRequest
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AuthRepository {
+@Singleton
+class AuthRepository @Inject constructor() {
     private val auth = Firebase.auth
 
     suspend fun signIn(email: String, password: String): Result<FirebaseUser> =

@@ -1,4 +1,4 @@
-package com.example.ense_as_ma.ui.components.forum
+package com.example.ense_as_ma.ui.screens.forum.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -12,7 +12,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.ense_as_ma.forum.model.Post
+import com.example.ense_as_ma.data.model.Post
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*

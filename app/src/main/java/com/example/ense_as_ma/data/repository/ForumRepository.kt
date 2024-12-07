@@ -1,6 +1,6 @@
-package com.example.ense_as_ma.forum.data
+package com.example.ense_as_ma.data.repository
 
-import com.example.ense_as_ma.forum.model.Post
+import com.example.ense_as_ma.data.model.Post
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -11,8 +11,11 @@ import kotlinx.coroutines.flow.flow
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ForumRepository {
+@Singleton
+class ForumRepository @Inject constructor(){
     private val db: FirebaseFirestore = Firebase.firestore
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val postsCollection = db.collection("posts")

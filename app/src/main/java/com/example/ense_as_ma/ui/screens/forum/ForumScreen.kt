@@ -1,4 +1,4 @@
-package com.example.ense_as_ma.ui.screens
+package com.example.ense_as_ma.ui.screens.forum
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,19 +11,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.ense_as_ma.forum.model.Post
-import com.example.ense_as_ma.forum.viewmodel.ForumViewModel
-import com.example.ense_as_ma.forum.viewmodel.ForumUiState
-import com.example.ense_as_ma.ui.components.forum.NewPostDialog
-import com.example.ense_as_ma.ui.components.forum.PostCard
+import com.example.ense_as_ma.ui.screens.forum.components.NewPostDialog
+import com.example.ense_as_ma.ui.screens.forum.components.PostCard
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForumScreen(
-    viewModel: ForumViewModel = viewModel()
+    forumViewModel: ForumViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by forumViewModel.uiState.collectAsState()
     var showNewPostDialog by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -71,7 +68,7 @@ fun ForumScreen(
                             PostCard(post = post,
                                 onLikeClick = {
                                     // Llamamos al método en el ViewModel para incrementar el likeCount
-                                    viewModel.increaseLikeCount(post.postId)
+                                    forumViewModel.increaseLikeCount(post.postId)
                                 },
                                 isLiked = post.likeCount > 0)
                             Spacer(modifier = Modifier.height(8.dp))
@@ -99,7 +96,7 @@ fun ForumScreen(
         NewPostDialog(
             onDismiss = { showNewPostDialog = false },
             onPostCreated = { post ->
-                viewModel.createPost(post)
+                forumViewModel.createPost(post)
                 showNewPostDialog = false
             }
         )
